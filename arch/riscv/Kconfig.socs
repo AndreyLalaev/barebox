@@ -128,6 +128,22 @@ config BOARD_ALLWINNER_D1
 
 endif
 
+config SOC_CVTEK_CV1800
+	bool "CVTEK CV1800"
+	depends on ARCH_RV64I
+	select HAS_DEBUG_LL
+	select HAS_CACHE
+
+if SOC_CVTEK_CV1800
+
+config BOARD_MILKV_DUO
+	bool "Milk-V Duo"
+	select RISCV_S_MODE
+	select RISCV_M_MODE
+	def_bool y
+
+endif
+
 comment "CPU features"
 
 config SIFIVE_L2

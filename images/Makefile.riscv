@@ -27,3 +27,7 @@ image-$(CONFIG_BOARD_LITEX_LINUX) += barebox-litex-linux.img
 pblb-$(CONFIG_BOARD_ALLWINNER_D1) += start_allwinner_d1
 FILE_barebox-allwinner-d1.img = start_allwinner_d1.pblb
 image-$(CONFIG_BOARD_ALLWINNER_D1) += barebox-allwinner-d1.img
+
+pblb-$(CONFIG_BOARD_MILKV_DUO) += start_milkv_duo
+FILE_barebox-milkv-duo.img = start_milkv_duo.pblb
+image-$(CONFIG_BOARD_MILKV_DUO) += barebox-milkv-duo.img

@@ -5,3 +5,4 @@ obj-$(CONFIG_BOARD_HIFIVE)		+= hifive/
 obj-$(CONFIG_BOARD_BEAGLEV)		+= beaglev/
 obj-$(CONFIG_BOARD_LITEX_LINUX)		+= litex-linux/
 obj-$(CONFIG_BOARD_RISCVEMU)		+= riscvemu/
+obj-$(CONFIG_BOARD_MILKV_DUO)		+= milkv-duo/
