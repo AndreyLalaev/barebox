@@ -329,6 +329,11 @@ config DEBUG_SUN20I
 	depends on SOC_ALLWINNER_SUN20I
 	select DEBUG_LL_NS16550
 
+config DEBUG_CV1800
+	bool "CV1800 ns16550 serial0 port"
+	depends on SOC_CVTEK_CV1800
+	select DEBUG_LL_NS16550
+
 config DEBUG_AM62X_UART
 	bool "Texas Instruments AM62X debug UART"
 	depends on ARCH_K3
