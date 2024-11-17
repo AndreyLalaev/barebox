@@ -9,6 +9,13 @@
 
 #define ____barebox_riscv_header(instr, load_offset, version, magic1, magic2)         \
 	__asm__ __volatile__ (                                                        \
+		"j 1f\n" /* JUMP0 */                                                  \
+		".word 0x33334c42\n"/* MAGIC */                                       \
+		".word 0xdeadbeea\n"/* CKSUM */                                       \
+		".word 0xdeadbeeb\n"/* SIZE */                                        \
+		".dword 0x80200000\n"/* RUNADDR */                                    \
+		"nop\n"/* RESERVED1 */                                                \
+		"nop\n"/* RESERVED2 */                                                \
 		instr "\n"                     /* code0 */                            \
 		"j 1f\n"                       /* code1 */                            \
 		".balign 8\n"                                                         \
