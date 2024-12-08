@@ -15,6 +15,7 @@
 #include <linux/sizes.h>
 #include <asm-generic/memory_layout.h>
 #include <linux/kernel.h>
+#include <linux/pagemap.h>
 #include <linux/types.h>
 #include <linux/compiler.h>
 #include <asm/sections.h>
@@ -22,6 +23,8 @@
 #include <asm/system.h>
 #include <asm/cache.h>
 #include <asm/reloc.h>
+
+#define RISCV_EARLY_PAGETABLE_SIZE SZ_4M
 
 void __noreturn __naked barebox_riscv_entry(unsigned long membase, unsigned long memsize,
 					    void *boarddata, unsigned int flags);
@@ -39,6 +42,36 @@ unsigned long riscv_mem_endmem_get(void);
 
 void *barebox_riscv_boot_dtb(void);
 
+/*
+ *  ------------------ riscv_mem_stack_top / endmem -------------------
+ *                                   ↑
+ *                               STACK_SIZE
+ *                                   ↓
+ *  ------------------------- riscv_mem_stack() -----------------------
+ *                                   ↑
+ *            PAGE_SIZE (depends on CONFIG_STACK_GUARD_PAGE)
+ *                                   ↓
+ *  ----------------------- riscv_mem_guard_page() --------------------
+ *                                   ↑
+ *                       RISCV_EARLY_PAGETABLE_SIZE
+ *                                   ↓
+ *  --------------------------- riscv_mem_ttb() -----------------------
+ *                                   ↑
+ *                     CONFIG_FS_PSTORE_RAMOOPS_SIZE
+ *                     (depends on FS_PSTORE_RAMOOPS)
+ *                                   ↓
+ *  ------------------------- riscv_mem_ramoops() ---------------------
+ *                                   ↑
+ *                   (barebox uncompressed image size
+ *                       + BSS) rounded to SZ_1M
+ *                                   ↓
+ *  ---------------------- riscv_mem_barebox_image() ------------------
+ *                                   ↑
+ *                                SZ_128K
+ *                                   ↓
+ *  ------------------------ riscv_mem_early_malloc -------------------
+ */
+
 static inline unsigned long riscv_mem_stack_top(unsigned long membase,
 						unsigned long endmem)
 {
@@ -49,6 +82,26 @@ static inline unsigned long riscv_mem_stack(unsigned long membase,
 					  unsigned long endmem)
 {
 	return riscv_mem_stack_top(membase, endmem) - STACK_SIZE;
+}
+
+static inline unsigned long riscv_mem_guard_page(unsigned long membase,
+						 unsigned long endmem)
+{
+	endmem = riscv_mem_stack(membase, endmem);
+
+	if (!IS_ENABLED(CONFIG_STACK_GUARD_PAGE))
+		return endmem;
+
+	return ALIGN_DOWN(endmem, PAGE_SIZE) - PAGE_SIZE;
+}
+
+static inline unsigned long riscv_mem_ttb(unsigned long membase,
+					  unsigned long endmem)
+{
+	endmem = riscv_mem_guard_page(membase, endmem);
+
+	return ALIGN_DOWN(endmem, RISCV_EARLY_PAGETABLE_SIZE) -
+		RISCV_EARLY_PAGETABLE_SIZE;
 }
 
 static inline unsigned long riscv_mem_early_malloc(unsigned long membase,
