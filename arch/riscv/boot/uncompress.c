@@ -15,6 +15,7 @@
 #include <asm/sections.h>
 #include <asm/unaligned.h>
 #include <asm/irq.h>
+#include <asm/mmu.h>
 
 #include <debug_ll.h>
 
@@ -57,6 +58,9 @@ void __noreturn barebox_pbl_start(unsigned long membase, unsigned long memsize,
 	setup_c();
 
 	pr_debug("memory at 0x%08lx, size 0x%08lx\n", membase, memsize);
+
+	if (IS_ENABLED(CONFIG_MMU))
+		mmu_early_enable(membase, memsize);
 
 	free_mem_ptr = riscv_mem_early_malloc(membase, endmem);
 	free_mem_end_ptr = riscv_mem_early_malloc_end(membase, endmem);
