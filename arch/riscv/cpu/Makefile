@@ -2,6 +2,12 @@
 
 obj-y += core.o time.o
 obj-$(CONFIG_HAS_DMA) += dma.o
+
+ifeq ($(CONFIG_ARCH_RV32I),y)
+obj-$(CONFIG_MMU) += mmu_32.o
+obj-pbl-$(CONFIG_MMU) += mmu_32.o
+endif
+
 ifeq ($(CONFIG_RISCV_EXCEPTIONS),y)
 obj-pbl-$(CONFIG_RISCV_M_MODE) += mtrap.o
 obj-pbl-$(CONFIG_RISCV_S_MODE) += strap.o
